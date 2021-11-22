@@ -9,7 +9,7 @@ const dbClient = new PrismaClient({
   ],
 });
 
-prisma.$on("query", async (e) => {
+dbClient.$on("query", async (e) => {
   console.log(e);
 });
 
