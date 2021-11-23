@@ -24,6 +24,11 @@ const signin = async (req, res) => {
   const userToFind = {
     ...req.body,
   };
+
+  if (!userToFind.email || !userToFind.password) {
+    res.status(400).json({ error: "Missing information" });
+  }
+
   try {
     const foundUser = await prisma.user.findUnique({
       where: {
