@@ -5,6 +5,10 @@ const signup = async (req, res) => {
   console.log("Inside signup controller: ", req.body);
   const userToCreate = { ...req.body };
 
+  if (!userToCreate.email || !userToCreate.password) {
+    res.status(400).json({ error: "Missing information" });
+  }
+
   try {
     const result = await prisma.user.create({
       data: {
