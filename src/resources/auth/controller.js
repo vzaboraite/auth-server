@@ -1,5 +1,6 @@
 const dbClient = require("../../utils/dbClient");
 const bcrypt = require("bcrypt");
+const { createToken } = require("../../utils/authentication");
 const prisma = dbClient;
 
 const signup = async (req, res) => {
@@ -19,8 +20,15 @@ const signup = async (req, res) => {
       data: {
         ...userToCreate,
       },
+      select: {
+        id: true,
+        email: true,
+      },
     });
-    res.json(result);
+
+    const token = createToken(result);
+
+    res.json(token);
   } catch (error) {
     console.error("[ERROR] /signup route: ", error);
 
@@ -45,17 +53,30 @@ const signin = async (req, res) => {
       },
     });
 
+    if (!foundUser) {
+      res.status(401).json({ error: "Authentication failed" });
+    }
+
+    console.log({
+      userToFind: userToFind.password,
+      foundUser: foundUser.password,
+    });
+
     const passwordsMatch = await bcrypt.compare(
       userToFind.password,
       foundUser.password
     );
 
-    if (!foundUser) {
-      res.status(401).json({ error: "Authentication failed" });
-    }
-
     if (passwordsMatch) {
-      res.status(200).json(foundUser);
+      const userToToken = {
+        ...foundUser,
+      };
+
+      delete userToToken.password;
+
+      const token = createToken(userToToken);
+
+      res.status(200).json(token);
     } else {
       res.status(401).json({ error: "Authentication failed" });
     }
