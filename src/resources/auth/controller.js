@@ -1,4 +1,5 @@
 const dbClient = require("../../utils/dbClient");
+const bcrypt = require("bcrypt");
 const prisma = dbClient;
 
 const signup = async (req, res) => {
@@ -10,6 +11,10 @@ const signup = async (req, res) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(userToCreate.password, 8);
+
+    userToCreate.password = hashedPassword;
+
     const result = await prisma.user.create({
       data: {
         ...userToCreate,
@@ -40,11 +45,16 @@ const signin = async (req, res) => {
       },
     });
 
+    const passwordsMatch = await bcrypt.compare(
+      userToFind.password,
+      foundUser.password
+    );
+
     if (!foundUser) {
       res.status(401).json({ error: "Authentication failed" });
     }
 
-    if (userToFind.password === foundUser.password) {
+    if (passwordsMatch) {
       res.status(200).json(foundUser);
     } else {
       res.status(401).json({ error: "Authentication failed" });
