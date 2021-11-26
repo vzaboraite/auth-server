@@ -3,7 +3,6 @@ const dbClient = require("../../utils/dbClient");
 const prisma = dbClient;
 
 const getUserPosts = async (req, res) => {
-  console.log({ userFromMiddleware: req.user });
   const user = req.user;
 
   try {

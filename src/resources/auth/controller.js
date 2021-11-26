@@ -4,7 +4,6 @@ const { createToken } = require("../../utils/authentication");
 const prisma = dbClient;
 
 const signup = async (req, res) => {
-  console.log("Inside signup controller: ", req.body);
   const userToCreate = { ...req.body };
 
   if (!userToCreate.email || !userToCreate.password) {
@@ -37,7 +36,6 @@ const signup = async (req, res) => {
 };
 
 const signin = async (req, res) => {
-  console.log("Inside signin controller: ", req.body);
   const userToFind = {
     ...req.body,
   };
@@ -57,11 +55,6 @@ const signin = async (req, res) => {
       res.status(401).json({ error: "Authentication failed" });
     }
 
-    console.log({
-      userToFind: userToFind.password,
-      foundUser: foundUser.password,
-    });
-
     const passwordsMatch = await bcrypt.compare(
       userToFind.password,
       foundUser.password
@@ -80,8 +73,6 @@ const signin = async (req, res) => {
     } else {
       res.status(401).json({ error: "Authentication failed" });
     }
-
-    console.log(foundUser);
   } catch (error) {
     console.error("[ERROR] /signin route: ", error);
 

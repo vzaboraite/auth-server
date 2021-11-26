@@ -10,7 +10,6 @@ const createToken = (user) => {
 };
 
 const protect = (req, res, next) => {
-  console.log({ headers: req.headers.authorization });
   const token = req.headers.authorization;
 
   const secretKey = process.env.JWT_SECRET;
@@ -19,8 +18,6 @@ const protect = (req, res, next) => {
     if (error) {
       throw Error("Not Authorized");
     }
-
-    console.log({ payload });
 
     const user = await prisma.user.findUnique({
       where: {
@@ -31,8 +28,6 @@ const protect = (req, res, next) => {
     if (!user) {
       return res.status(401).end();
     }
-
-    console.log("INSIDE MIDDLEWARE: ", user);
 
     req.user = user;
 
