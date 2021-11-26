@@ -3,12 +3,13 @@ const dbClient = require("../../utils/dbClient");
 const prisma = dbClient;
 
 const getUserPosts = async (req, res) => {
-  console.log({ headers: req.headers.authorization });
-  const userId = req.headers.authorization;
+  console.log({ userFromMiddleware: req.user });
+  const user = req.user;
+
   try {
     const authUserPosts = await prisma.post.findMany({
       where: {
-        userId: parseInt(userId),
+        userId: user.id,
       },
       include: {
         user: true,

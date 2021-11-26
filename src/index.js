@@ -5,6 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const authRouter = require("../src/resources/auth/router");
 const postsRouter = require("../src/resources/posts/router");
+const { protect } = require("./utils/authentication");
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(morgan("dev"));
 /* SETUP ROUTES */
 
 app.use("/", authRouter);
-app.use("/posts", postsRouter);
+app.use("/posts", protect, postsRouter);
 
 app.get("*", (req, res) => {
   res.json({ ok: true });
